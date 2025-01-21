@@ -126,7 +126,9 @@ public class MemorySpace {
 			   else{
 				small = small.next;
 			   }
-			}//kkllklk
+			}//kkll
+			//llkll
+			
 			
 		}
 		big = big.next;
