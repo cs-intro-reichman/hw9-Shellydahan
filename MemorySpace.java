@@ -113,6 +113,22 @@ public class MemorySpace {
 	 */
 	public void defrag() {
 		/// TODO: Implement defrag test
-		//// Write your code here
+		int sum = 0;
+		Node big = freeList.getFirst();
+		Node small = big.next;
+		for (int i = 0; i < freeList.getSize(); i++){
+			for (int j = 0; j < freeList.getSize(); j++){
+               sum = big.block.baseAddress + big.block.length;
+			   if (sum == small.block.baseAddress){
+				big.block.length = big.block.length + small.block.length;
+                freeList.remove(small);
+			   }
+			   else{
+				small = small.next;
+			   }
+			}//kkllklk
+			
+		}
+		big = big.next;
 	}
 }
