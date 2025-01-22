@@ -50,7 +50,7 @@ public class LinkedList {
 	 * @return the node at the given index
 	 */		
 	public Node getNode(int index) {
-		if (index < 0 || index > size) {
+		if (index < 0 || index >= size) {
 			throw new IllegalArgumentException(
 					"index must be between 0 and size");
 		}
@@ -86,24 +86,20 @@ public class LinkedList {
 					"index must be between 0 and size");
 		}
 		Node insert = new Node(block);
-		if (size == 0){
-			this.first = insert;
-			this.last = insert;
-			size++;
+		if (index == 0) {
+			insert.next = first;
+			first = insert;
+			if (size == 0) {
+				last = insert;
+			}
+		} else if (index == size) {
+			last.next = insert;
+			last = insert;
+		} else {
+			Node prev = getNode(index - 1);
+			insert.next = prev.next;
+			prev.next = insert;
 		}
-		if (index == 0){
-           insert.next = this.first;
-		   this.first = insert;
-		   size++;
-		}
-		if (index == size){
-		   this.last.next = insert;
-		   this.last = insert;
-		   size++;
-		}
-		Node current = getNode(index-1);
-		insert.next = current.next;
-		current.next = insert;
 		size++;
 	}
 
