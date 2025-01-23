@@ -58,22 +58,25 @@ public class MemorySpace {
 	 * @return the base address of the allocated block, or -1 if unable to allocate
 	 */
 	public int malloc(int length) {		
-		Node n = freeList.getFirst();
-		for (int i = 0; i < freeList.getSize(); i++){
-           if (n.block.length >= length){
-			MemoryBlock m = new MemoryBlock(n.block.baseAddress, length);
-			allocatedList.addLast(m);
-			if (n.block.length > length){
-			n.block.length = n.block.length - length;
-			n.block.baseAddress = n.block.baseAddress + length;
-			
+		ListIterator chec = freeList.iterator();
+		int index = 0;
+		while (chec.hasNext() && chec.current.block.length<length){
+			if (chec.current.block.length >= length){
+				MemoryBlock block1 = new MemoryBlock(chec.current.block.baseAddress,length);
+				allocatedList.addLast(block1);
+				if (chec.current.block.length ==0){
+					freeList.remove(chec.current.block);
+				}
+				else {
+					MemoryBlock old = new MemoryBlock(chec.current.block.baseAddress + length, chec.current.block.length-length);
+					freeList.add(index,old);
+					freeList.remove(chec.current.block);
+				}
+				return block1.baseAddress;
+
 			}
-			else{
-              freeList.remove(n);
-			}
-			return m.baseAddress;
-		   }
-		   n = n.next;
+		chec.next();
+		index++;
 		}
 		return -1;
 	}
@@ -87,13 +90,15 @@ public class MemorySpace {
 	 *            the starting address of the block to freeList
 	 */
 	public void free(int address) {
-		Node temp = allocatedList.getFirst();
-		for (int i = 0; i < allocatedList.getSize(); i++){
-           if (temp.block.baseAddress == address){
-			freeList.addLast(temp.block);
-		    allocatedList.remove(temp);
-		   }
-		   temp = temp.next;
+		if(allocatedList.getSize()== 0){
+			throw new IllegalArgumentException("index must be between 0 and size");
+		}
+		ListIterator chec = allocatedList.iterator();
+		while (chec.hasNext() && chec.current.block.baseAddress != address){
+			if (chec.current.block.baseAddress == address){
+				freeList.addLast(chec.current.block);
+				allocatedList.remove(chec.current.block);
+			}
 		}
 		
 	}
