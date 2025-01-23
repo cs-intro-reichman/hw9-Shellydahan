@@ -168,38 +168,39 @@ public class LinkedList {
 	 *        the node that will be removed from this list
 	 */
 	public void remove(Node node) {
-		if(node ==null){
-			if (node == null) {
-				throw new NullPointerException("Node cannot be null");
-			}		
+		if (node == null) {
+			throw new NullPointerException("ERROR NullPointerException!");
 		}
 		int index = indexOf(node.block);
-		if(index ==-1){
-			throw new IllegalArgumentException(
-				"index must be between 0 and size");
+		if (index == -1) {
+			return;
 		}
-		if(size==1){
-			first=null;
-			last= first;
-			size--;
-		}
-		else{
-			if(index==0){
-			first = first.next;
-			size--;
+		Node current = first; 
+		Node prev = null;
+		if (index == 0) {
+			first = current.next;
+			if (first == null) {
+				last = null;
 			}
-			else if(index==size-1){
-			Node prev = getNode(index-1);
-			prev.next = null;
-			last = prev;
 			size--;
-			}
-			else{
-			Node prev = getNode(index-1);
-			prev.next = prev.next.next;
-			size--;
+			return;
 		}
-	}
+		int count = 0;
+		while (current != null && count != index) {
+			prev = current;
+			current = current.next;
+			count++;
+		}
+		if (current == null) {
+			return;
+		}
+		if (index == size - 1) {
+			prev.next = null; 
+			last = prev; 
+		} else {
+			prev.next = current.next;
+		}	
+		size--;
 	}
 	
 	/**
