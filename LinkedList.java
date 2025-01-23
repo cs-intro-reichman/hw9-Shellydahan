@@ -169,8 +169,9 @@ public class LinkedList {
 	 */
 	public void remove(Node node) {
 		if(node ==null){
-			throw new IllegalArgumentException(
-				"index must be between 0 and size");
+			if (node == null) {
+				throw new NullPointerException("Node cannot be null");
+			}		
 		}
 		int index = indexOf(node.block);
 		if(index ==-1){
