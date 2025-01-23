@@ -58,25 +58,24 @@ public class MemorySpace {
 	 * @return the base address of the allocated block, or -1 if unable to allocate
 	 */
 	public int malloc(int length) {		
-		ListIterator chec = freeList.iterator();
-		int index = 0;
-		while (chec.hasNext() && chec.current.block.length<length){
-			if (chec.current.block.length >= length){
-				MemoryBlock block1 = new MemoryBlock(chec.current.block.baseAddress,length);
-				allocatedList.addLast(block1);
-				if (chec.current.block.length ==0){
-					freeList.remove(chec.current.block);
+		int count = 0;
+		Node current = freeList.getNode(count);
+		while (current != null) {
+			if (current.block.length >= length) {
+				MemoryBlock update = new MemoryBlock(current.block.baseAddress, length);
+				allocatedList.addLast(update);
+				int updateAddress = current.block.baseAddress;
+				if (current.block.length == length) {
+					freeList.remove(count);	
+				} else {
+					current.block.baseAddress += length;
+					current.block.length -= length;
 				}
-				else {
-					MemoryBlock old = new MemoryBlock(chec.current.block.baseAddress + length, chec.current.block.length-length);
-					freeList.add(index,old);
-					freeList.remove(chec.current.block);
-				}
-				return block1.baseAddress;
-
+				return updateAddress;
+			} else { 
+				count++;
+				current = freeList.getNode(count);
 			}
-		chec.next();
-		index++;
 		}
 		return -1;
 	}
@@ -124,8 +123,6 @@ public class MemorySpace {
 			throw new IllegalArgumentException(
 				"index must be between 0 and size");
 		}
-		Node first1 = freeList.getFirst();
-		Node second = first1.next;
 		MemoryBlock blockBig = freeList.getBlock(0);
 		MemoryBlock blockSmall = freeList.getBlock(1);
 		if(size==2){	
