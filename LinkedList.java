@@ -167,79 +167,40 @@ public class LinkedList {
 	 * @param node
 	 *        the node that will be removed from this list
 	 */
-	//public void remove(Node node) {
-		//if (node == null) {
-		//	throw new NullPointerException("NullPointerException!");
-		//}
-		//if (node == first) {
-			//first = first.next;
-			//if (first == null) { // List becomes empty
-			//	last = null;
-			//}
-			//size--;
-		//}
-	//	Node current = first;
-   // while (current != null && current.next != node) {
-      //  current = current.next;
-   // }
-    
-  //  if (current == null || current.next == null) {
-    //    throw new IllegalArgumentException("Node does not belong to this list.");
- //   }
-    
-    // Remove the node
-   // current.next = node.next;
-   // if (node == last) { // If the node is the last node
-    //    last = current;
-  //  }
-   //size--;
-	//}
-	public boolean remove(Node node) {
-		// Check if the node exists in the list
-		Node current = first;
-		boolean nodeFound = false;
-	
-		while (current != null) {
-			if (current == node) {
-				nodeFound = true;
-				break;
+	public void remove(Node node) {
+		if(node ==null){
+			throw new IllegalArgumentException(
+				"index must be between 0 and size");
+		}
+		int index = indexOf(node.block);
+		if(index ==-1){
+			throw new IllegalArgumentException(
+				"index must be between 0 and size");
+		}
+		if(size==1){
+			first=null;
+			last= first;
+			size--;
+		}
+		else{
+			if(index==0){
+			first = first.next;
+			size--;
 			}
-			current = current.next;
-		}
-	
-		if (!nodeFound) {
-			throw new IllegalArgumentException("Node does not belong to this list.");
-		}
-	
-		// Handle removing the head node
-		if (first == node) {
-			first = first.next; // Update head
-			if (first == null) {
-				last = null; // If list is now empty, update tail
+			else if(index==size-1){
+			Node prev = getNode(index-1);
+			prev.next = null;
+			last = prev;
+			size--;
 			}
-			return true;
+			else{
+			Node prev = getNode(index-1);
+			prev.next = prev.next.next;
+			size--;
 		}
-	
-		// Handle removing a middle or last node
-		Node prev = null;
-		current = first;
-	
-		while (current != null) {
-			if (current == node) {
-				if (prev != null) {
-					prev.next = current.next; // Skip the node being removed
-				}
-				if (current == last) {
-					last = prev; // Update tail if the last node is removed
-				}
-				return true;
-			}
-			prev = current;
-			current = current.next;
-		}
-	
-		return false; // If somehow the node isn't found (shouldn't reach here)
 	}
+	}
+	
 	/**
 	 * Removes from this list the node which is located at the given index.
 	 * 
