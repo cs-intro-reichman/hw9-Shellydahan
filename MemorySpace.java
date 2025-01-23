@@ -119,23 +119,33 @@ public class MemorySpace {
 	public void defrag() {
 		/// TODO: Implement defrag test
 		int sum = 0;
-		Node big = freeList.getFirst();
-		Node small = big.next;
-		for (int i = 0; i < freeList.getSize(); i++){
-			for (int j = 0; j < freeList.getSize(); j++){
-               sum = big.block.baseAddress + big.block.length;
-			   if (sum == small.block.baseAddress){
-				big.block.length = big.block.length + small.block.length;
-                freeList.remove(small);
-			   }
-			   else{
-				small = small.next;
-			   }
-			}//kkll
-			//llkll
-			
-			
+		int size = freeList.getSize();
+		if(size<2){
+			throw new IllegalArgumentException(
+				"index must be between 0 and size");
 		}
-		big = big.next;
+		Node first1 = freeList.getFirst();
+		Node second = first1.next;
+		MemoryBlock blockBig = freeList.getBlock(0);
+		MemoryBlock blockSmall = freeList.getBlock(1);
+		if(size==2){	
+			if(blockBig.length + blockBig.baseAddress != blockSmall.baseAddress){
+				throw new IllegalArgumentException(
+					"index must be between 0 and size");
+			}
+			MemoryBlock block = new MemoryBlock(blockBig.baseAddress,blockBig.length+blockSmall.length);
+			freeList.remove(0);
+			freeList.remove(1);
+			freeList.addFirst(block);
+		}
+		if(size>2){
+			MemoryBlock update1= freeList.getBlock(2);
+			sum = blockBig.length + blockSmall.length + update1.length;
+			MemoryBlock update2 = new MemoryBlock(blockBig.baseAddress, sum);
+			freeList.remove(0); 
+			freeList.remove(1); 
+			freeList.remove(2);
+			freeList.addFirst(update2);
+		}
 	}
 }
