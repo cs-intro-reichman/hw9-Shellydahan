@@ -58,26 +58,23 @@ public class MemorySpace {
 	 * @return the base address of the allocated block, or -1 if unable to allocate
 	 */
 	public int malloc(int length) {		
-		int count = 0;
-		Node current = freeList.getNode(count);
-		while (current != null) {
-			if (current.block.length >= length) {
-				MemoryBlock update = new MemoryBlock(current.block.baseAddress, length);
-				allocatedList.addLast(update);
-				int updateAddress = current.block.baseAddress;
-				if (current.block.length == length) {
-					freeList.remove(count);	
+		ListIterator iterator = freeList.iterator();
+		while (iterator.hasNext()) {
+			MemoryBlock updateBlock = iterator.next();
+			if (updateBlock.length >= length) {
+				int currentBaseAddress = updateBlock.baseAddress;
+				MemoryBlock allocatedBlock = new MemoryBlock(currentBaseAddress, length);
+				allocatedList.addLast(allocatedBlock);
+				if (updateBlock.length == length) {
+					freeList.remove(updateBlock);
 				} else {
-					current.block.baseAddress += length;
-					current.block.length -= length;
+					updateBlock.baseAddress += length;
+					updateBlock.length -= length;
 				}
-				return updateAddress;
-			} else { 
-				count++;
-				current = freeList.getNode(count);
+				return currentBaseAddress;
 			}
 		}
-		return -1;
+		return -1; 
 	}
 
 	/**
@@ -92,16 +89,23 @@ public class MemorySpace {
 		if (allocatedList.getSize() == 0) {
 			throw new IllegalArgumentException("index must be between 0 and size");
 		}
-		ListIterator allocIterator = allocatedList.iterator();
-		while (allocIterator.hasNext()) {
-			MemoryBlock currentBlock = allocIterator.next();
-			if (currentBlock.baseAddress == address) {
-				allocatedList.remove(currentBlock);
-				freeList.addLast(currentBlock);
+		ListIterator count = new ListIterator(allocatedList.getFirst());
+		while (count.hasNext()) {
+			if (count.current.block.baseAddress == address) {
+				freeList.addLast(count.current.block);
+				allocatedList.remove(count.current.block);
+				return; 
+			}
+			count.next(); 
+		}
+		ListIterator freeCount = new ListIterator(freeList.getFirst());
+		while (freeCount.hasNext()) {
+			if (freeCount.current.block.baseAddress == address) {
 				return;
 			}
+			freeCount.next(); 
 		}
-		
+		return; 
 	}
 	
 	/**
@@ -118,7 +122,6 @@ public class MemorySpace {
 	 * In this implementation Malloc does not call defrag.
 	 */
 	public void defrag() {
-		/// TODO: Implement defrag test
 		if (freeList.getSize() <= 1) {
 			return;
 		}	
